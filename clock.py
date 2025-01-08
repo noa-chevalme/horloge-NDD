@@ -1,3 +1,4 @@
+#Importation of library to manage the date, the hour, a thread and a sound for the alarm
 import datetime
 import time
 import threading
@@ -5,11 +6,11 @@ import pygame
 
 
 current_time = datetime.datetime.now()
-
+#Function to get the time
 def get_current_time():
     global current_time
     return current_time.strftime("%H:%M:%S")
-
+#Function to set an alarm, and ring with a sound when its time
 def alarm(ring):
     while True:
         current_time_str = get_current_time()
@@ -20,7 +21,7 @@ def alarm(ring):
             print("\nDing! Your alarm is ringing!")
             break
         time.sleep(1)  
-
+#Function to show the clock and go back to the menu with Ctrl+C
 def clock():
     try:
         while True:
@@ -28,7 +29,7 @@ def clock():
             time.sleep(1)  
     except KeyboardInterrupt:
         print("\nClock stopped.")
-
+#Function to allow the user to change the time as he please
 def change_time():
     global current_time
     new_time_str = input("Enter the new time (HH:MM:SS): ")
@@ -38,12 +39,14 @@ def change_time():
         print(f"Time changed to {get_current_time()}")
     except ValueError:
         print("Invalid time format. Please enter in HH:MM:SS format.")
-
+#Function to update the changed time, adding a second every second
 def update_time():
     global current_time
     while True:
         time.sleep(1)  
         current_time += datetime.timedelta(seconds=1)  
+#Function adding a menu to navigate between all the features, and managing the thread for the changed time and the alarm
+#allowing them to operate separately from the rest
 def menu():
     alarm_thread = None  
    
@@ -76,4 +79,5 @@ def menu():
             break
         else:
             print("Invalid choice. Please enter 1, 2, 3, or 4.")
+#Calling the menu to start the program
 menu()
