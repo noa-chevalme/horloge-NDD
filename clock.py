@@ -45,6 +45,11 @@ def update_time():
     while True:
         time.sleep(1)  
         current_time += datetime.timedelta(seconds=1)  
+#Function to reset changed time to default time
+def reset_time():
+    global current_time
+    current_time = datetime.datetime.now()
+    print("Time changed to default.")
 #Function adding a menu to navigate between all the features, and managing the thread for the changed time and the alarm
 #allowing them to operate separately from the rest
 def menu():
@@ -56,13 +61,14 @@ def menu():
     while True:
         print("\nMenu:")
         print("1: Clock")
-        print("2: Set Alarm")
-        print("3: Change Time Manually")
-        print("4: Exit")
+        print("2: Set alarm")
+        print("3: Change time manually")
+        print("4: Reset the clock to default time")
+        print("5: Exit")
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            print("Press Ctrl+C to stop the clock.")
+            print("Press Ctrl+C to go back to menu.")
             clock()
         elif choice == "2":
             ring = input("Enter the time for your alarm (HH:MM:SS): ")
@@ -74,10 +80,12 @@ def menu():
                 alarm_thread.start()
         elif choice == "3":
             change_time() 
-        elif choice == "4":
+        elif choice =="4":
+            reset_time()
+        elif choice == "5":
             print("Exiting program. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter 1, 2, 3, or 4.")
+            print("Invalid choice. Please enter 1, 2, 3, 4 or 5.")
 #Calling the menu to start the program
 menu()
