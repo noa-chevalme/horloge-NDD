@@ -3,8 +3,10 @@ import datetime
 import time
 import threading
 import pygame
-
-
+#Flag for the pause function
+pause_event = threading.Event()  
+pause_event.set()
+#Base variable of the time
 current_time = datetime.datetime.now()
 #Function to get the time
 def get_current_time():
@@ -28,7 +30,7 @@ def clock():
             print(f"\rCurrent time: {get_current_time()}", end="")
             time.sleep(1)  
     except KeyboardInterrupt:
-        print("\nClock stopped.")
+        print("\nClock closed, back to menu.")
 #Function to allow the user to change the time as he please
 def change_time():
     global current_time
@@ -43,30 +45,39 @@ def change_time():
 def update_time():
     global current_time
     while True:
-        time.sleep(1)  
-        current_time += datetime.timedelta(seconds=1)  
+        pause_event.wait()
+        time.sleep(1)
+        current_time += datetime.timedelta(seconds=1)
 #Function to reset changed time to default time
 def reset_time():
     global current_time
     current_time = datetime.datetime.now()
     print("Time changed to default.")
-#Function adding a menu to navigate between all the features, and managing the thread for the changed time and the alarm
-#allowing them to operate separately from the rest
+#Function to pause/unpaused the clock
+def pause():
+    global pause_event
+    if pause_event.is_set():  
+        print(f"\nTime paused: {get_current_time()}")
+        pause_event.clear()  
+    else:
+        print("\nTime unpaused.")
+        pause_event.set() 
+#Function adding a menu to navigate between all the features, and managing the thread for the changed time the alarm
+#and the pauuse, allowing them to operate separately from the rest
 def menu():
     alarm_thread = None  
-   
+    global time_updater_thread
     time_updater_thread = threading.Thread(target=update_time, daemon=True)
     time_updater_thread.start()
-    
     while True:
         print("\nMenu:")
         print("1: Clock")
         print("2: Set alarm")
         print("3: Change time manually")
         print("4: Reset the clock to default time")
-        print("5: Exit")
+        print("5: Pause")
+        print("6: Exit")
         choice = input("Enter your choice: ")
-
         if choice == "1":
             print("Press Ctrl+C to go back to menu.")
             clock()
@@ -79,13 +90,17 @@ def menu():
                 alarm_thread = threading.Thread(target=alarm, args=(ring,))
                 alarm_thread.start()
         elif choice == "3":
+            time_updater_thread = threading.Thread(target=update_time, daemon=True)
+            time_updater_thread.start()
             change_time() 
         elif choice =="4":
             reset_time()
-        elif choice == "5":
+        elif choice =="5":
+            pause()
+        elif choice == "6":
             print("Exiting program. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter 1, 2, 3, 4 or 5.")
+            print("Invalid choice. Please enter 1, 2, 3, 4, or 6.")
 #Calling the menu to start the program
 menu()
