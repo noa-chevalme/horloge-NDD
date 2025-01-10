@@ -75,6 +75,9 @@ def AM_PM():
 #and the pauuse, allowing them to operate separately from the rest
 def menu():
     alarm_thread = None  
+    global time_updater_thread
+    time_updater_thread = threading.Thread(target=update_time, daemon=True)
+    time_updater_thread.start()
     while True:
         print("\nMenu:")
         print("1: Clock")
@@ -97,8 +100,6 @@ def menu():
                 alarm_thread = threading.Thread(target=alarm, args=(ring,))
                 alarm_thread.start()
         elif choice == "3":
-            time_updater_thread = threading.Thread(target=update_time, daemon=True)
-            time_updater_thread.start()
             change_time() 
         elif choice =="4":
             reset_time()
