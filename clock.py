@@ -1,4 +1,4 @@
-#Importation of library to manage the date, the hour, a thread and a sound for the alarm
+#Importation of library to manage the date, the time, a thread and a sound for the alarm
 import datetime
 import time
 import threading
@@ -8,10 +8,12 @@ pause_event = threading.Event()
 pause_event.set()
 #Base variable of the time
 current_time = datetime.datetime.now()
+#Base variable for the time mode
+mode="%H:%M:%S"
 #Function to get the time
 def get_current_time():
     global current_time
-    return current_time.strftime("%H:%M:%S")
+    return current_time.strftime(mode)
 #Function to set an alarm, and ring with a sound when its time
 def alarm(ring):
     while True:
@@ -36,7 +38,7 @@ def change_time():
     global current_time
     new_time_str = input("Enter the new time (HH:MM:SS): ")
     try:
-        new_time = datetime.datetime.strptime(new_time_str, "%H:%M:%S")
+        new_time = datetime.datetime.strptime(new_time_str, mode)
         current_time = new_time
         print(f"Time changed to {get_current_time()}")
     except ValueError:
@@ -61,14 +63,18 @@ def pause():
         pause_event.clear()  
     else:
         print("\nTime unpaused.")
-        pause_event.set() 
+        pause_event.set()
+#Function to change the time mode to AM/PM and back
+def AM_PM():
+    global mode
+    if mode=="%H:%M:%S":
+        mode="%I:%M:%S:%p"
+    else:
+        mode="%H:%M:%S"
 #Function adding a menu to navigate between all the features, and managing the thread for the changed time the alarm
 #and the pauuse, allowing them to operate separately from the rest
 def menu():
     alarm_thread = None  
-    global time_updater_thread
-    time_updater_thread = threading.Thread(target=update_time, daemon=True)
-    time_updater_thread.start()
     while True:
         print("\nMenu:")
         print("1: Clock")
@@ -76,7 +82,8 @@ def menu():
         print("3: Change time manually")
         print("4: Reset the clock to default time")
         print("5: Pause")
-        print("6: Exit")
+        print("6: Change time mode")
+        print("7: Exit")
         choice = input("Enter your choice: ")
         if choice == "1":
             print("Press Ctrl+C to go back to menu.")
@@ -97,10 +104,12 @@ def menu():
             reset_time()
         elif choice =="5":
             pause()
-        elif choice == "6":
+        elif choice =="6":
+            AM_PM()
+        elif choice == "7":
             print("Exiting program. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter 1, 2, 3, 4, or 6.")
+            print("Invalid choice. Please enter 1, 2, 3, 4, 6 or 7.")
 #Calling the menu to start the program
 menu()
